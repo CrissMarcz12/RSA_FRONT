@@ -273,6 +273,139 @@ function RSAForm() {
         </>
       )}
 
+      {/* INFORMACIÓN DE CLAVES RSA */}
+      {result && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="mt-10"
+        >
+          <h3 className="text-2xl md:text-3xl font-black mb-6 text-cyan-300">
+            Información de Claves RSA
+          </h3>
+
+          <div className="grid gap-6 md:grid-cols-3 mb-8">
+            {/* Clave pública */}
+            <div className="bg-[#0b1220]/80 border border-cyan-500/20 rounded-3xl p-6 shadow-2xl flex flex-col">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm text-gray-300 uppercase tracking-wider">
+                  Clave pública
+                </h4>
+              </div>
+
+              <div className="mt-4">
+                <p className="text-3xl md:text-4xl font-black text-cyan-400">
+                  ({result.e}, {result.n})
+                </p>
+                <p className="text-sm text-gray-400 mt-3">
+                  Se utiliza para cifrar mensajes y puede ser compartida
+                  públicamente.
+                </p>
+              </div>
+            </div>
+
+            {/* Clave privada */}
+            <div className="bg-[#0b1220]/80 border border-cyan-500/20 rounded-3xl p-6 shadow-2xl flex flex-col">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm text-gray-300 uppercase tracking-wider">
+                  Clave privada
+                </h4>
+              </div>
+
+              <div className="mt-4">
+                <p className="text-3xl md:text-4xl font-black text-pink-400">
+                  ({result.d}, {result.n})
+                </p>
+                <p className="text-sm text-gray-400 mt-3">
+                  Se utiliza para descifrar mensajes y debe mantenerse en
+                  secreto.
+                </p>
+              </div>
+            </div>
+
+            {/* Primos usados */}
+            <div className="bg-[#0b1220]/80 border border-cyan-500/20 rounded-3xl p-6 shadow-2xl flex flex-col">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm text-gray-300 uppercase tracking-wider">
+                  Primos utilizados
+                </h4>
+              </div>
+
+              <div className="mt-4">
+                <p className="text-2xl md:text-3xl font-black text-green-300">
+                  p = {selectedPair ? selectedPair.p : "—"}
+                </p>
+                <p className="text-2xl md:text-3xl font-black text-cyan-300">
+                  q = {selectedPair ? selectedPair.q : "—"}
+                </p>
+                <p className="text-sm text-gray-400 mt-3">
+                  Estos números primos son la base matemática del algoritmo RSA.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Flujo RSA */}
+          <div className="bg-[#07101a]/70 border border-cyan-500/10 rounded-3xl p-6 md:p-8 shadow-inner">
+            <h4 className="text-lg font-bold text-cyan-200 mb-4">
+              Flujo del algoritmo RSA
+            </h4>
+
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 1</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Seleccionar números primos
+                </p>
+              </div>
+
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 2</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Calcular n = p × q
+                </p>
+              </div>
+
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 3</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Calcular φ(n) = (p−1)(q−1)
+                </p>
+              </div>
+
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 4</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Generar clave pública (e, n)
+                </p>
+              </div>
+
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 5</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Generar clave privada (d, n)
+                </p>
+              </div>
+
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 6</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Cifrar mensaje
+                </p>
+              </div>
+
+              <div className="bg-[#09131b]/80 border border-cyan-500/20 rounded-2xl p-4 flex flex-col">
+                <span className="text-sm text-gray-400">Paso 7</span>
+                <p className="font-black text-cyan-400 text-xl mt-2">
+                  Descifrar mensaje
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* ENCRYPTION */}
 
       {result && (
