@@ -60,7 +60,10 @@ function RSAForm() {
       // store which mode produced this pair so we know where to display it
       setSelectedPair({ ...pair, mode });
 
-      const response = await axios.post("https://rsa-lab-backend.onrender.com/generate", pair);
+      const response = await axios.post(
+        "https://rsa-lab-backend.onrender.com/generate",
+        pair,
+      );
 
       setResult(response.data);
 
@@ -78,11 +81,14 @@ function RSAForm() {
 
   const encryptMessage = async () => {
     try {
-      const response = await axios.post("https://rsa-lab-backend.onrender.com/encrypt", {
-        message,
-        e: result.e,
-        n: result.n,
-      });
+      const response = await axios.post(
+        "https://rsa-lab-backend.onrender.com/encrypt",
+        {
+          message,
+          e: result.e,
+          n: result.n,
+        },
+      );
 
       setEncrypted(response.data.encrypted);
     } catch (error) {
@@ -96,11 +102,14 @@ function RSAForm() {
 
   const decryptMessage = async () => {
     try {
-      const response = await axios.post("https://rsa-lab-backend.onrender.com/decrypt", {
-        encrypted,
-        d: result.d,
-        n: result.n,
-      });
+      const response = await axios.post(
+        "https://rsa-lab-backend.onrender.com/decrypt",
+        {
+          encrypted,
+          d: result.d,
+          n: result.n,
+        },
+      );
 
       setDecrypted(response.data.decrypted);
     } catch (error) {
@@ -216,10 +225,22 @@ function RSAForm() {
       {result && (
         <>
           <div className="grid md:grid-cols-2 gap-6 mt-10">
-            <ResultCard title="n" value={result.n} />
-            <ResultCard title="Euler φ(n)" value={result.phi} />
-            <ResultCard title="Public exponent (e)" value={result.e} />
-            <ResultCard title="Private exponent (d)" value={result.d} />
+            <ResultCard title="n" value={result.n} formula={`n = p × q`} />
+            <ResultCard
+              title="Euler φ(n)"
+              value={result.phi}
+              formula={`φ(n) = (p - 1) × (q - 1)`}
+            />
+            <ResultCard
+              title="Exponente público (e)"
+              value={result.e}
+              formula={`Elegido: 1 < e < φ(n) y mcd(e, φ(n)) = 1`}
+            />
+            <ResultCard
+              title="Exponente privado (d)"
+              value={result.d}
+              formula={`d · e ≡ 1 (mod φ(n)) — d = e⁻¹ mod φ(n)`}
+            />
           </div>
 
           {/* Selected primes visual */}
