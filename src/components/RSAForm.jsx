@@ -8,6 +8,10 @@ function RSAForm() {
 
   const [result, setResult] = useState(null);
 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isEncrypting, setIsEncrypting] = useState(false);
+  const [isDecrypting, setIsDecrypting] = useState(false);
+
   const [message, setMessage] = useState("");
   const [encrypted, setEncrypted] = useState([]);
   const [decrypted, setDecrypted] = useState("");
@@ -52,6 +56,7 @@ function RSAForm() {
   // -----------------------------------
 
   const generateKeys = async () => {
+    setIsGenerating(true);
     try {
       const pair =
         mode === "small"
@@ -63,6 +68,7 @@ function RSAForm() {
       const response = await axios.post(
         "https://rsa-lab-backend.onrender.com/generate",
         pair,
+        { timeout: 10000 },
       );
 
       setResult(response.data);
@@ -72,6 +78,8 @@ function RSAForm() {
       setFactors([]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -80,6 +88,7 @@ function RSAForm() {
   // -----------------------------------
 
   const encryptMessage = async () => {
+    setIsEncrypting(true);
     try {
       const response = await axios.post(
         "https://rsa-lab-backend.onrender.com/encrypt",
@@ -88,11 +97,14 @@ function RSAForm() {
           e: result.e,
           n: result.n,
         },
+        { timeout: 10000 },
       );
 
       setEncrypted(response.data.encrypted);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsEncrypting(false);
     }
   };
 
@@ -101,6 +113,7 @@ function RSAForm() {
   // -----------------------------------
 
   const decryptMessage = async () => {
+    setIsDecrypting(true);
     try {
       const response = await axios.post(
         "https://rsa-lab-backend.onrender.com/decrypt",
@@ -109,11 +122,14 @@ function RSAForm() {
           d: result.d,
           n: result.n,
         },
+        { timeout: 10000 },
       );
 
       setDecrypted(response.data.decrypted);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsDecrypting(false);
     }
   };
 
@@ -135,6 +151,7 @@ function RSAForm() {
               {
                 n: result.n,
               },
+              { timeout: 20000 },
             );
 
             setFactors(response.data.factors);
@@ -155,6 +172,7 @@ function RSAForm() {
 
       <div className="grid md:grid-cols-2 gap-6 mb-10">
         <button
+          type="button"
           onClick={() => setMode("small")}
           className={`p-6 md:p-8 rounded-3xl border transition-all duration-300 ${
             mode === "small"
@@ -180,6 +198,7 @@ function RSAForm() {
         </button>
 
         <button
+          type="button"
           onClick={() => setMode("large")}
           className={`p-6 md:p-8 rounded-3xl border transition-all duration-300 ${
             mode === "large"
@@ -213,10 +232,12 @@ function RSAForm() {
         </h2>
 
         <button
+          type="button"
           onClick={generateKeys}
-          className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-4 md:py-5 rounded-2xl text-base md:text-xl"
+          disabled={isGenerating || hacking}
+          className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-4 md:py-5 rounded-2xl text-base md:text-xl disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Generador de Claves RSA
+          {isGenerating ? "Generando..." : "Generador de Claves RSA"}
         </button>
       </div>
 
@@ -453,24 +474,30 @@ function RSAForm() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             <button
+              type="button"
               onClick={encryptMessage}
-              className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-3 md:py-5 rounded-2xl text-base md:text-xl"
+              disabled={isEncrypting || hacking}
+              className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-3 md:py-5 rounded-2xl text-base md:text-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Cifrar
+              {isEncrypting ? "Cifrando..." : "Cifrar"}
             </button>
 
             <button
+              type="button"
               onClick={decryptMessage}
-              className="bg-gradient-to-r from-purple-400 to-pink-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-3 md:py-5 rounded-2xl text-base md:text-xl"
+              disabled={isDecrypting || hacking}
+              className="bg-gradient-to-r from-purple-400 to-pink-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-3 md:py-5 rounded-2xl text-base md:text-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Descifrar
+              {isDecrypting ? "Descifrando..." : "Descifrar"}
             </button>
 
             <button
+              type="button"
               onClick={hackRSA}
-              className="bg-gradient-to-r from-red-500 to-orange-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-3 md:py-5 rounded-2xl text-base md:text-xl"
+              disabled={hacking}
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:scale-[1.02] transition-all duration-300 text-black font-black py-3 md:py-5 rounded-2xl text-base md:text-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Atacar RSA
+              {hacking ? "Atacando..." : "Atacar RSA"}
             </button>
           </div>
 
