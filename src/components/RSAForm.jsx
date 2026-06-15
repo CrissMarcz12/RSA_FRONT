@@ -11,6 +11,7 @@ function RSAForm() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const [message, setMessage] = useState("");
   const [encrypted, setEncrypted] = useState([]);
@@ -48,6 +49,7 @@ function RSAForm() {
     setSelectedPair(null);
     setFactors([]);
     setHacking(false);
+    setErrorMessage(null);
   };
 
   const pickRandomPair = (arr) => {
@@ -67,6 +69,7 @@ function RSAForm() {
   // -----------------------------------
 
   const generateKeys = async () => {
+    setErrorMessage(null);
     setIsGenerating(true);
     try {
       const pair =
@@ -76,11 +79,19 @@ function RSAForm() {
       // store which mode produced this pair so we know where to display it
       setSelectedPair({ ...pair, mode });
 
+      const timeout = mode === "large" ? 20000 : 10000;
       const response = await axios.post(
         "https://rsa-lab-backend.onrender.com/generate",
         pair,
-        { timeout: 10000 },
+        { timeout },
       );
+
+      console.log("generate response:", response?.data);
+
+      if (!response || !response.data) {
+        setErrorMessage("No se recibió respuesta del servidor.");
+        return;
+      }
 
       setResult(response.data);
 
@@ -89,6 +100,11 @@ function RSAForm() {
       setFactors([]);
     } catch (error) {
       console.log(error);
+      setErrorMessage(
+        error?.response?.data?.message ||
+          error.message ||
+          "Error al generar claves",
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -99,6 +115,12 @@ function RSAForm() {
   // -----------------------------------
 
   const encryptMessage = async () => {
+    setErrorMessage(null);
+    if (!result) {
+      setErrorMessage("Genera primero las claves antes de cifrar.");
+      return;
+    }
+
     setIsEncrypting(true);
     try {
       const response = await axios.post(
@@ -111,9 +133,13 @@ function RSAForm() {
         { timeout: 10000 },
       );
 
-      setEncrypted(response.data.encrypted);
+      console.log("encrypt response:", response?.data);
+      setEncrypted(response.data.encrypted || []);
     } catch (error) {
       console.log(error);
+      setErrorMessage(
+        error?.response?.data?.message || error.message || "Error al cifrar",
+      );
     } finally {
       setIsEncrypting(false);
     }
@@ -124,6 +150,12 @@ function RSAForm() {
   // -----------------------------------
 
   const decryptMessage = async () => {
+    setErrorMessage(null);
+    if (!result) {
+      setErrorMessage("Genera primero las claves antes de descifrar.");
+      return;
+    }
+
     setIsDecrypting(true);
     try {
       const response = await axios.post(
@@ -136,9 +168,13 @@ function RSAForm() {
         { timeout: 10000 },
       );
 
-      setDecrypted(response.data.decrypted);
+      console.log("decrypt response:", response?.data);
+      setDecrypted(response.data.decrypted || "");
     } catch (error) {
       console.log(error);
+      setErrorMessage(
+        error?.response?.data?.message || error.message || "Error al descifrar",
+      );
     } finally {
       setIsDecrypting(false);
     }
@@ -149,6 +185,7 @@ function RSAForm() {
   // -----------------------------------
 
   const hackRSA = async () => {
+    setErrorMessage(null);
     setHacking(true);
 
     setFactors([]);
@@ -168,6 +205,11 @@ function RSAForm() {
             setFactors(response.data.factors);
           } catch (error) {
             console.log(error);
+            setErrorMessage(
+              error?.response?.data?.message ||
+                error.message ||
+                "Error al factorizar",
+            );
           }
         }
 
@@ -179,6 +221,11 @@ function RSAForm() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      {errorMessage && (
+        <div className="mb-6 p-4 rounded-lg bg-red-900/60 border border-red-500 text-red-200">
+          <strong className="font-bold">Error:</strong> {errorMessage}
+        </div>
+      )}
       {/* MODE SELECTION */}
 
       <div className="grid md:grid-cols-2 gap-6 mb-10">
