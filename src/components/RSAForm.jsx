@@ -39,6 +39,17 @@ function RSAForm() {
 
   const [selectedPair, setSelectedPair] = useState(null);
 
+  const changeMode = (m) => {
+    setMode(m);
+    // Limpiar resultados anteriores al cambiar de modo
+    setResult(null);
+    setEncrypted([]);
+    setDecrypted("");
+    setSelectedPair(null);
+    setFactors([]);
+    setHacking(false);
+  };
+
   const pickRandomPair = (arr) => {
     if (!arr || arr.length < 2) return { p: arr[0], q: arr[0] };
     const a = arr[Math.floor(Math.random() * arr.length)];
@@ -173,7 +184,7 @@ function RSAForm() {
       <div className="grid md:grid-cols-2 gap-6 mb-10">
         <button
           type="button"
-          onClick={() => setMode("small")}
+          onClick={() => changeMode("small")}
           className={`p-6 md:p-8 rounded-3xl border transition-all duration-300 ${
             mode === "small"
               ? "bg-red-500/20 border-red-400"
@@ -199,7 +210,7 @@ function RSAForm() {
 
         <button
           type="button"
-          onClick={() => setMode("large")}
+          onClick={() => changeMode("large")}
           className={`p-6 md:p-8 rounded-3xl border transition-all duration-300 ${
             mode === "large"
               ? "bg-green-500/20 border-green-400"
